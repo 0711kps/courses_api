@@ -52,4 +52,14 @@ RSpec.configure do |config|
   config.filter_rails_from_backtrace!
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
+
+  config.around(:each) do |test|
+    Data.users[:id] = 0
+    Data.users[:data] = []
+    Data.courses[:id] = 0
+    Data.courses[:data] = []
+    Data.enrollments[:id] = 0
+    Data.enrollments[:data] = []
+    test.run
+  end
 end
