@@ -12,6 +12,11 @@ group :development do
   gem 'standard', '1.12.1'
 end
 
+group :development, :test do
+  gem 'pry-rails', '0.3.9'
+end
+
 group :test do
   gem 'rspec-rails', '5.1.2'
 end
+
