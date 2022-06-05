@@ -183,4 +183,46 @@ RSpec.describe "Users", type: :request do
       end
     end
   end
+
+  describe 'GET /courses/{:id}/users' do
+    let(:path) { '/courses/1/users' }
+
+    context 'When users of that course exist' do
+      let(:enrollment) do
+        {
+          id: 1,
+          user_id: 1,
+          course_id: 1,
+          role: 'student'
+        }
+      end
+
+      let(:user_data) do
+        {
+          id: 1,
+          name: 'a student',
+          email: 'stu@mail.com'
+        }
+      end
+
+      it 'Response with 200 and users data' do
+        Data.users[:data] << user_data
+        Data.enrollments[:data] << enrollment
+        get path
+        expect(response).to have_http_status(200)
+        expect(
+          JSON
+            .parse(response.body)['data']
+            .map { |user| user.symbolize_keys }
+        )
+      end
+    end
+
+    context 'When users of that course does not exist' do
+      it 'Response with 400' do
+        get path
+        expect(response).to have_http_status(400)
+      end
+    end
+  end
 end
