@@ -54,4 +54,74 @@ RSpec.describe "Users", type: :request do
       end
     end
   end
+
+  describe 'GET /users/search' do
+    let(:user_data) do
+      {
+        id: 1,
+        name: 'user',
+        email: 'user@mail.com'
+      }
+    end
+    
+    context 'When email given' do
+      let(:path) { '/users/search?email=user@mail.com' }
+
+      context 'When user exist' do
+        it 'Response with user data and 200' do
+          Data.users[:data] << user_data
+          get path
+          expect(response).to have_http_status(200)
+          expect(JSON.parse(response.body)['data'].symbolize_keys).to eq(user_data)
+        end
+      end
+
+      context 'When user does not exist' do
+        it 'Response with 400' do
+          get path
+          expect(response).to have_http_status(400)
+        end
+      end
+    end
+    
+    context 'When name given' do
+      let(:path) { '/users/search?name=user' }
+
+      context 'When user exist' do
+        it 'Response with user data and 200' do
+          Data.users[:data] << user_data
+          get path
+          expect(response).to have_http_status(200)
+          expect(JSON.parse(response.body)['data'].symbolize_keys).to eq(user_data)
+        end
+      end
+
+      context 'When user does not exist' do
+        it 'Response with 400' do
+          get path
+          expect(response).to have_http_status(400)
+        end
+      end
+    end
+    
+    context 'When both given' do
+      let(:path) { '/users/search?email=user@mail.com&name=user' }
+
+      context 'When user exist' do
+        it 'Response with user data and 200' do
+          Data.users[:data] << user_data
+          get path
+          expect(response).to have_http_status(200)
+          expect(JSON.parse(response.body)['data'].symbolize_keys).to eq(user_data)
+        end
+      end
+
+      context 'When user does not exist' do
+        it 'Response with 400' do
+          get path
+          expect(response).to have_http_status(400)
+        end
+      end
+    end
+  end
 end
