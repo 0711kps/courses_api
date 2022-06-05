@@ -124,4 +124,38 @@ RSpec.describe "Users", type: :request do
       end
     end
   end
+
+  describe 'PUT /users/1' do
+    let(:path) { '/users/1' }
+
+    context 'When user exist' do
+      let(:user_data) do
+        {
+          name: 'user',
+          email: 'user@mail.com'
+        }
+      end
+      let(:updated_user_data) do
+        {
+          name: 'user-x',
+          email: 'user-x@mail.com'
+        }
+      end
+
+      it 'Response with 200 and updated data' do
+        Data.users[:data] << user_data.merge(id: 1)
+        put path, params: updated_user_data
+        expect(response).to have_http_status(200)
+        expect(Data.users[:data]).to eq([{id: 1, name: 'user-x', email: 'user-x@mail.com'}])
+        expect(JSON.parse(response.body)['data'].symbolize_keys).to eq(updated_user_data.merge(id: 1))
+      end
+    end
+
+    context 'When user not exist' do
+      it 'Response with 400' do
+        put path
+        expect(response).to have_http_status(400)
+      end
+    end
+  end
 end
