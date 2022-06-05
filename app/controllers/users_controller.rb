@@ -1,13 +1,10 @@
 class UsersController < ApplicationController
+  before_action :validate_email, only: %i[create search]
   def create
-    if !create_params[:email].match?(/^\S+@\S+$/)
-      return render json: { msg: 'email not allowed' }, status: :bad_request
-    end
-
     Data.users[:data] << {
       id: Data.users[:id] + 1,
-      name: create_params[:name],
-      email: create_params[:email]
+      name: user_params[:name],
+      email: user_params[:email]
     }
     Data.users[:id] += 1
     render json: { msg: 'user created' }, status: :created
@@ -20,10 +17,32 @@ class UsersController < ApplicationController
     render json: { data: user }
   end
 
+  def search
+    case user_params.as_json.symbolize_keys
+        in { email: , name: } => pattern
+        in { email: } => pattern
+        in { name: } => pattern
+    else
+      return render json: { msg: 'email or name not given' }, status: :bad_request
+    end
+    user = Data.users[:data].find { |user| user in pattern }
+    if user
+      render json: { data: user }
+    else
+      render json: { msg: 'user not exist' }, status: :bad_request
+    end
+  end
+
 
   private
 
-  def create_params
+  def user_params
     params.permit(:email, :name)
+  end
+
+  def validate_email
+    if params[:email] && !params[:email].match?(/^\S+@\S+$/)
+      return render json: { msg: 'email not allowed' }, status: :bad_request
+    end
   end
 end
