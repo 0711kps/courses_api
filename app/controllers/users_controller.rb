@@ -1,6 +1,7 @@
 class UsersController < ApplicationController
   before_action :validate_email, only: %i[create search update]
   before_action :find_user, only: %i[show update destroy]
+
   def create
     Data.users[:data] << {
       id: Data.users[:id] + 1,
@@ -42,7 +43,6 @@ class UsersController < ApplicationController
       render json: { msg: 'user not exist' }, status: :bad_request
     end
   end
-
 
   private
 
