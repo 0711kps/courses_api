@@ -158,4 +158,29 @@ RSpec.describe "Users", type: :request do
       end
     end
   end
+
+  describe 'DELETE /users/1' do
+    let(:path) { '/users/1' }
+
+    context 'user exist' do
+      it 'Response with 200 and user deleted' do
+        Data.users[:data] << {
+          id: 1,
+          name: 'victim',
+          email: 'victim@mail.com'
+        }
+
+        delete path
+        expect(response).to have_http_status(200)
+        expect(Data.users[:data]).to eq([])
+      end
+    end
+
+    context 'user not exist' do
+      it 'Response with 400' do
+        delete path
+        expect(response).to have_http_status(400)
+      end
+    end
+  end
 end
