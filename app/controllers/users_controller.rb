@@ -1,5 +1,6 @@
 class UsersController < ApplicationController
   before_action :validate_email, only: %i[create search update]
+  before_action :find_user, only: %i[show update destroy]
   def create
     Data.users[:data] << {
       id: Data.users[:id] + 1,
@@ -11,21 +12,19 @@ class UsersController < ApplicationController
   end
 
   def update
-    user = Data.users[:data].find { |user| user[:id] == params[:id].to_i }
-    
-    if user
-      user.merge!(user_params.as_json.symbolize_keys)
-      render json: { data: user }
-    else
-      render json: { msg: 'user not exist' }, status: :bad_request
-    end
+    @user.merge!(user_params.as_json.symbolize_keys)
+    render json: { data: @user }
+  end
+
+  def destroy
+    Data.users[:data].delete_at(Data.users[:data].index(@user))
+    render json: { msg: 'user deleted '}
   end
 
   def show
-    user = Data.users[:data].find { |user|  user[:id] == params[:id].to_i }
-    return render json: { msg: 'user not exist' }, status: :bad_request unless user
+    return render json: { msg: 'user not exist' }, status: :bad_request unless @user
 
-    render json: { data: user }
+    render json: { data: @user }
   end
 
   def search
@@ -55,5 +54,10 @@ class UsersController < ApplicationController
     if params[:email] && !params[:email].match?(/^\S+@\S+$/)
       return render json: { msg: 'email not allowed' }, status: :bad_request
     end
+  end
+
+  def find_user
+    @user = Data.users[:data].find { |user| user[:id] == params[:id].to_i }
+    render json: { msg: 'user not exist' }, status: :bad_request unless @user
   end
 end
