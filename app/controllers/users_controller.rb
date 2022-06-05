@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  before_action :validate_email, only: %i[create search]
+  before_action :validate_email, only: %i[create search update]
   def create
     Data.users[:data] << {
       id: Data.users[:id] + 1,
@@ -8,6 +8,17 @@ class UsersController < ApplicationController
     }
     Data.users[:id] += 1
     render json: { msg: 'user created' }, status: :created
+  end
+
+  def update
+    user = Data.users[:data].find { |user| user[:id] == params[:id].to_i }
+    
+    if user
+      user.merge!(user_params.as_json.symbolize_keys)
+      render json: { data: user }
+    else
+      render json: { msg: 'user not exist' }, status: :bad_request
+    end
   end
 
   def show
