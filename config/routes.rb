@@ -1,6 +1,9 @@
 Rails.application.routes.draw do
   resources :users, only: %i[create show update destroy] do
-    get 'search'
+    collection do
+      get 'search'
+    end
+    
     member do
       get 'courses'
     end
