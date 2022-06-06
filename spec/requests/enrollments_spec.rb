@@ -69,4 +69,34 @@ RSpec.describe "Enrollments", type: :request do
       end
     end
   end
+
+  describe 'DELETE /enrollments/{:id}' do
+    let(:path) { '/enrollments/1' }
+    let(:enrollment) do
+      {
+        id: 1,
+        user_id: 1,
+        course_id: 1,
+        role: 'student'
+      }
+    end
+
+    context 'When enrollment not exist' do
+      it 'Response with 400' do
+        delete path
+        expect(response).to have_http_status(400)
+      end
+    end
+
+    context 'When enrollment exist' do
+      before do
+        Data.enrollments[:data] << enrollment
+      end
+
+      it 'Response with 200' do
+        delete path
+        expect(response).to have_http_status(200)
+      end
+    end
+  end
 end
