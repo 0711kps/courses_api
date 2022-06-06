@@ -17,7 +17,6 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :enrollment, only: %i[] do
-    
+  resources :enrollments, only: %i[create] do
   end
 end
