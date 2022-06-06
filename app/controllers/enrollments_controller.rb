@@ -1,5 +1,6 @@
 class EnrollmentsController < ApplicationController
   before_action :validate_create_params, only: :create
+  before_action :find_enrollment, only: :destroy
 
   ALLOWED_ROLE = %w[student teacher]
   
@@ -12,6 +13,16 @@ class EnrollmentsController < ApplicationController
     }
     Data.enrollments[:data] << new_enrollment
     render json: { data: new_enrollment }, status: :created
+  end
+
+  def destroy
+    if @enrollment
+      Data.enrollments[:data].delete_at(Data.enrollments[:data].index(@enrollment))
+
+      render json: { msg: 'enrollment widhdrawed' }
+    else
+      render json: { msg: 'enrollment not exist' }, status: :bad_request
+    end
   end
 
   private
@@ -33,5 +44,9 @@ class EnrollmentsController < ApplicationController
 
   def create_params
     params.permit(:user_id, :course_id, :role)
+  end
+
+  def find_enrollment
+    @enrollment = Data.enrollments[:data].find { _1[:id] == params[:id].to_i }
   end
 end
