@@ -25,6 +25,15 @@ class EnrollmentsController < ApplicationController
     end
   end
 
+  def show
+    enrollment = Data.enrollments[:data].find { _1[:id] == params[:id].to_i }
+    if enrollment
+      render json: { data: enrollment }
+    else
+      render json: { msg: 'enrollment not exist' }, status: :bad_request
+    end
+  end
+
   private
 
   def validate_create_params
