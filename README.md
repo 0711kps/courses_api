@@ -17,7 +17,7 @@ bundle exec rails server
 
 ## 須注意的部分
 
-- 這個demo不使用資料庫, 資料儲存在 @users, @enrollments, @courses 三個變數中
+- 這個demo不使用資料庫, 資料儲存在 Data 變數下面
 - 由於不使用ActiveRecord, 一些功能的實作方式與實際正式環境的 RoR 專案可能會有所不同
 - 一些命名不採用駝峯式(appleBanana)而是根據Ruby的最佳實踐採用蛇式(apple_banana)
 - 可以透過 /make_me_wool 取得管理者的token
