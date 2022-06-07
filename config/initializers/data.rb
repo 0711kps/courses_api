@@ -29,4 +29,4 @@ DefaultData = lambda do
     )
 end
 
-Data = DefaultData.clone
+Data = DefaultData.call
