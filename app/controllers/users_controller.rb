@@ -36,7 +36,9 @@ class UsersController < ApplicationController
     else
       return render json: { msg: 'email or name not given' }, status: :bad_request
     end
-    user = Data.users[:data].find { |user| user in pattern }
+    user = Data.users[:data].find do |user|
+      pattern.all? { user[_1] == _2 }
+    end
     if user
       render json: { data: user }
     else
