@@ -14,6 +14,24 @@ bundle install
 bundle exec rails server
 ```
 
+## API
+
+|方法|路徑|參數|回應|解釋|
+|---|---|---|---|---|
+|POST|/users|name: String, email: String|msg: String|建立user|
+|GET|/users/{:id}|no|id: Integer, name: String, email: String|查詢一筆user|
+|GET|/users/search?email=&name=|email: String, name: String|id: Integer, name: String, email: String|根據email或name查詢一筆user|
+|PUT|/users/{:id}|name: String, email: String|id: Integer, name: String, email: String|更新一筆user|
+|DELETE|/users/{:id}|id: Integer|no|刪除一筆user|
+|GET|/courses/{:id}/users|no|[{ id: Integer, name: String, email: String }...]|查詢與某一筆course相關的所有users|
+|POST|/enrollments|user_id: Integer, course_id: Integer, role: String|id: Integer, user_id: Integer, course_id: Integer, role: String|建立一筆course與user的關聯(enrollment)|
+|DELETE|/enrollments/{:id}|no|no|刪除一筆enrollment|
+|GET|/enrollments/{:id}|no|id: Integer, user_id: Integer, course_id: Integer, role: String|根據id查詢一筆enrollment|
+|GET|/enrollments/search?user_id=&course_id=&role=|user_id: Integer, course_id: Integer, role: String|[{ id: Integer, user_id: Integer, course_id: Integer, role: String }]|根據 user_id, course_id, 或 role 查詢多筆 enrollments|
+|GET|/courses/{:id}|no|id: Integer, name: String|根據id查詢一筆course|
+|GET|/users/{:id}/courses|no|[{ id: Integer, name: String }]|根據user_id查詢相關的多筆courses|
+|GET|/make_me_wool|no|token: String|取得用於測試的admin JWT token|
+
 
 ## 須注意的部分
 
