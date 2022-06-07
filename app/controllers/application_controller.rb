@@ -9,6 +9,8 @@ class ApplicationController < ActionController::API
 
   def decode_token(token)
     JWT.decode(token, JWT_KEY, 'HS256')
+  rescue ArgumentError => e
+    return [{'user' => nil}]
   end
 
   def validate_admin
