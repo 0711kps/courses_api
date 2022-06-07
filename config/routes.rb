@@ -18,5 +18,8 @@ Rails.application.routes.draw do
   end
 
   resources :enrollments, only: %i[create destroy show] do
+    collection do
+      get 'search'
+    end
   end
 end

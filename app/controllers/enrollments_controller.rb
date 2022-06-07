@@ -1,5 +1,5 @@
 class EnrollmentsController < ApplicationController
-  before_action :validate_create_params, only: :create
+  before_action :validate_enrollment_params, only: :create
   before_action :find_enrollment, only: :destroy
 
   ALLOWED_ROLE = %w[student teacher]
@@ -7,9 +7,9 @@ class EnrollmentsController < ApplicationController
   def create
     new_enrollment = {
       id: Data.enrollments[:id] + 1,
-      user_id: create_params[:user_id].to_i,
-      course_id: create_params[:course_id].to_i,
-      role: create_params[:role]
+      user_id: enrollment_params[:user_id].to_i,
+      course_id: enrollment_params[:course_id].to_i,
+      role: enrollment_params[:role]
     }
     Data.enrollments[:data] << new_enrollment
     render json: { data: new_enrollment }, status: :created
@@ -34,10 +34,36 @@ class EnrollmentsController < ApplicationController
     end
   end
 
+  def search
+    case enrollment_params.as_json.symbolize_keys
+        in { user_id: , course_id: , role: } => pattern
+        in { user_id: , course_id: } => pattern
+        in { user_id: , role: } => pattern
+        in { course_id: , role: } => pattern
+        in { user_id: } => pattern
+        in { course_id: } => pattern
+        in { role: } => pattern
+    else
+      return render json: { msg: '' }
+    end
+
+    pattern[:user_id] = pattern[:user_id].to_i if pattern[:user_id]
+    pattern[:course_id] = pattern[:course_id].to_i if pattern[:course_id]
+
+    enrollments = Data.enrollments[:data].filter do |enrollment|
+      pattern.all? { enrollment[_1] == _2 }
+    end
+    if enrollments.any?
+      render json: { data: enrollments }
+    else
+      render json: { msg: 'enrollment not exist' }, status: :bad_request
+    end
+  end
+
   private
 
-  def validate_create_params
-    case create_params.as_json.symbolize_keys
+  def validate_enrollment_params
+    case enrollment_params.as_json.symbolize_keys
         in { user_id: , course_id: , role: }
         return bad_create_response unless Data.users[:data].any? { _1[:id] == user_id.to_i }
         return bad_create_response unless Data.courses[:data].any? { _1[:id] == course_id.to_i }
@@ -51,7 +77,7 @@ class EnrollmentsController < ApplicationController
     render json: { msg: 'user, course, or role not allowed' }, status: :bad_request
   end
 
-  def create_params
+  def enrollment_params
     params.permit(:user_id, :course_id, :role)
   end
 
