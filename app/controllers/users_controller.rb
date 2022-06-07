@@ -46,6 +46,16 @@ class UsersController < ApplicationController
     end
   end
 
+  def courses
+    course_ids = Data.enrollments[:data].filter { _1[:user_id] == params[:id].to_i }.map { _1[:course_id] }
+    if course_ids.any?
+      courses = Data.courses[:data].filter { course_ids.include?(_1[:id]) }
+      render json: { data: courses }
+    else
+      render json: { msg: 'user not exist' }, status: :bad_request
+    end
+  end
+
   private
 
   def user_params
