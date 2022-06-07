@@ -126,4 +126,69 @@ RSpec.describe "Enrollments", type: :request do
       end
     end
   end
+
+  describe 'get /enrollments/search' do
+    let(:path1) { '/enrollments/search?user_id=1' }
+    let(:path2) { '/enrollments/search?course_id=1' }
+    let(:path3) { '/enrollments/search?role=student' }
+    let(:enrollment1) do
+      {
+        id: 1,
+        user_id: 1,
+        course_id: 2,
+        role: 'teacher'
+      }
+    end
+    let(:enrollment2) do
+      {
+        id: 2,
+        user_id: 1,
+        course_id: 1,
+        role: 'student'
+      }
+    end
+    let(:enrollment3) do
+      {
+        id: 3,
+        user_id: 2,
+        course_id: 2,
+        role: 'student'
+      }
+    end
+    before do
+      Data.enrollments[:data] << enrollment1
+      Data.enrollments[:data] << enrollment2
+      Data.enrollments[:data] << enrollment3
+    end
+
+    context 'When query with user_id' do
+      it 'Response with correct enrollments data and 200' do
+        get path1
+        expect(response).to have_http_status(200)
+        expect(
+          JSON.parse(response.body)['data'].map(&:symbolize_keys)
+        ).to eq([enrollment1, enrollment2])
+      end
+    end
+
+    context 'When query with course_id' do
+      it 'Response with correct enrollments data and 200' do
+        get path2
+        expect(response).to have_http_status(200)
+        expect(
+          JSON.parse(response.body)['data'].map(&:symbolize_keys)
+        ).to eq([enrollment2])
+      end
+    end
+
+    context 'When query with role' do
+      it 'Response with correct enrollments data and 200' do
+        get path3
+        expect(response).to have_http_status(200)
+        expect(
+          JSON.parse(response.body)['data'].map(&:symbolize_keys)
+        ).to eq([enrollment2, enrollment3])
+      end
+    end
+  end
 end
