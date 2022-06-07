@@ -1,6 +1,12 @@
 require 'rails_helper'
 
 RSpec.describe "Enrollments", type: :request do
+ let(:header_with_token) do
+    {
+      'Authorization' => 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjoid29vbCIsImV4cGlyZWRfYXQiOiIyMDIyLTA2LTA3IDE2OjIwOjQ3ICswODAwIn0.KPokejZb4V5DvvDN_KB4q8ZSOa5xIgBbSMcl69Xe8a4'
+    }
+ end
+ 
   describe "POST /enrollments" do
     let(:path) { '/enrollments' }
     let(:user) do
@@ -13,6 +19,14 @@ RSpec.describe "Enrollments", type: :request do
 
     let(:correct_role) { 'student'}
     let(:wrong_role) { 'vendor' }
+
+    context 'When auth token not legal' do
+      it 'Response with 401' do
+        post path
+        expect(response).to have_http_status(401)
+      end
+    end
+    
     context 'When user not exist' do
       it 'Response with 400' do
         Data.users[:data] << user
@@ -20,7 +34,7 @@ RSpec.describe "Enrollments", type: :request do
                user_id: 2,
                course_id: 2,
                role: correct_role
-             }
+             }, headers: header_with_token
         expect(response).to have_http_status(400)
       end
     end
@@ -32,7 +46,7 @@ RSpec.describe "Enrollments", type: :request do
                user_id: 1,
                course_id: 99,
                role: correct_role
-             }
+             }, headers: header_with_token
         expect(response).to have_http_status(400)
       end
     end
@@ -44,7 +58,7 @@ RSpec.describe "Enrollments", type: :request do
                user_id: 1,
                course_id: 2,
                role: wrong_role
-             }
+             }, headers: header_with_token
         expect(response).to have_http_status(400)
       end
     end
@@ -56,7 +70,7 @@ RSpec.describe "Enrollments", type: :request do
                user_id: 1,
                course_id: 2,
                role: correct_role
-             }
+             }, headers: header_with_token
         expect(response).to have_http_status(201)
         expect(
           JSON.parse(response.body)['data'].symbolize_keys
@@ -81,9 +95,16 @@ RSpec.describe "Enrollments", type: :request do
       }
     end
 
+    context 'When auth token not legal' do
+      it 'Response with 401' do
+        delete path
+        expect(response).to have_http_status(401)
+      end
+    end
+
     context 'When enrollment not exist' do
       it 'Response with 400' do
-        delete path
+        delete path, headers: header_with_token
         expect(response).to have_http_status(400)
       end
     end
@@ -94,7 +115,7 @@ RSpec.describe "Enrollments", type: :request do
       end
 
       it 'Response with 200' do
-        delete path
+        delete path, headers: header_with_token
         expect(response).to have_http_status(200)
       end
     end

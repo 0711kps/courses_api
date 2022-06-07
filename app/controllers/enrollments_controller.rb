@@ -1,4 +1,5 @@
 class EnrollmentsController < ApplicationController
+  before_action :validate_admin, only: %i[create destroy]
   before_action :validate_enrollment_params, only: :create
   before_action :find_enrollment, only: :destroy
 
