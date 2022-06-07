@@ -99,4 +99,31 @@ RSpec.describe "Enrollments", type: :request do
       end
     end
   end
+
+  describe 'get /enrollments/{:id}' do
+    let(:path) { '/enrollments/1' }
+    context 'When enrollment exist' do
+      let(:enrollment) do
+        {
+          id: 1,
+          user_id: 1,
+          course_id: 1,
+          role: 'student'
+        }
+      end
+      it 'Response with enrollment data and 200' do
+        Data.enrollments[:data] << enrollment
+        get path
+        expect(response).to have_http_status(200)
+        expect(JSON.parse(response.body)['data'].symbolize_keys).to eq(enrollment)
+      end
+    end
+
+    context 'When enrollment does not exist' do
+      it 'Response with 400' do
+        get path
+        expect(response).to have_http_status(400)
+      end
+    end
+  end
 end
