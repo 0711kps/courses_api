@@ -1,4 +1,5 @@
 class UsersController < ApplicationController
+  before_action :validate_admin, only: %i[create update destroy]
   before_action :validate_email, only: %i[create search update]
   before_action :find_user, only: %i[show update destroy]
 

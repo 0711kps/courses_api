@@ -22,4 +22,6 @@ Rails.application.routes.draw do
       get 'search'
     end
   end
+
+  get '/make_me_wool', to: 'tokens#make_me_wool'
 end
